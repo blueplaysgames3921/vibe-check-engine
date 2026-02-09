@@ -9,19 +9,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Topic is required" }, { status: 400 });
     }
 
-    const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: `Topic: ${topic}` }
-    ];
-
     const response = await fetch(POLLINATIONS_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Referer": "https://vibe-check-engine.vercel.app",
       },
       body: JSON.stringify({
-        messages,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `Topic: ${topic}` }
+        ],
         model: TEXT_MODEL,
         jsonMode: true,
         seed: Math.floor(Math.random() * 1000000)
@@ -29,16 +26,20 @@ export async function POST(req: NextRequest) {
     });
 
     const data = await response.json();
-    
     let content = data.choices[0].message.content;
-    
-    if (typeof content === 'string') {
+
+    // Safety check for JSON formatting
+    if (typeof content === "string") {
+      try {
         content = JSON.parse(content);
+      } catch (e) {
+        return NextResponse.json({ error: "AI returned invalid JSON. Try again." }, { status: 500 });
+      }
     }
 
     return NextResponse.json(content);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
