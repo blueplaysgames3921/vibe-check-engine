@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vibe-check-engine.vercel.app/sitemap.xml
+
