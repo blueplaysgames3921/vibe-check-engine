@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TEXT_MODEL, SYSTEM_PROMPT, POLLINATIONS_BASE_URL } from "@/lib/constants";
+import { TEXT_MODEL, SYSTEM_PROMPT } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
   try {
     const { topic } = await req.json();
+    const apiKey = process.env.POLLINATIONS_API_KEY || "";
 
-    if (!topic) {
-      return NextResponse.json({ error: "Topic is required" }, { status: 400 });
-    }
-
-    const response = await fetch(POLLINATIONS_BASE_URL, {
+    const response = await fetch("https://text.pollinations.ai/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "User-Agent": "VibeCheckEngine/1.0",
       },
       body: JSON.stringify({
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `Topic: ${topic}` }
+          { role: "user", content: topic }
         ],
         model: TEXT_MODEL,
         jsonMode: true,
@@ -25,21 +24,22 @@ export async function POST(req: NextRequest) {
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Pollinations API Error:", errorText);
+      return NextResponse.json({ error: "Pollinations API refused request" }, { status: response.status });
+    }
+
     const data = await response.json();
     let content = data.choices[0].message.content;
 
-    // Safety check for JSON formatting
     if (typeof content === "string") {
-      try {
-        content = JSON.parse(content);
-      } catch (e) {
-        return NextResponse.json({ error: "AI returned invalid JSON. Try again." }, { status: 500 });
-      }
+      content = JSON.parse(content);
     }
 
     return NextResponse.json(content);
-  } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Runtime Error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
