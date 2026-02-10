@@ -15,7 +15,7 @@ interface ResultCardProps {
 export default function ResultCard({ data }: ResultCardProps) {
   if (!data) return null;
 
-  const imageUrl = `${IMAGE_BASE_URL}${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1350&nologo=true`;
+  const imageUrl = `${IMAGE_BASE_URL}/image/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1920&nologo=true`;
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
