@@ -15,48 +15,65 @@ interface ResultCardProps {
 export default function ResultCard({ data }: ResultCardProps) {
   if (!data) return null;
 
-const seed = Math.floor(Math.random() * 999999);
-const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1920&nologo=true&seed=${seed}`;
-
+  // Generate a seed locally to ensure text and image are requested with the same context
+  const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
+  
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1350&nologo=true&seed=${seed}`;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
-        <div className="relative aspect-[4/5] w-full bg-zinc-800">
+    <div className="w-full max-w-xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+        
+        {*/IMAGE CONTAINER/*}
+        <div className="relative aspect-[4/5] w-full bg-zinc-950 overflow-hidden">
           <Image
             src={imageUrl}
-            alt="Generated content visual"
+            alt="Cinematic Visual"
             fill
-            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover transition-scale duration-1000 hover:scale-105"
             unoptimized
+            priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-          <div className="absolute bottom-0 p-6 w-full">
-            <span className="bg-purple-600 text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded mb-3 inline-block">
-              Viral Hook
-            </span>
-            <h3 className="text-xl font-bold text-white leading-tight mb-2 italic">
+          
+          {/* Text Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <div className="absolute bottom-0 p-8 w-full">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-sm">
+                The Hook
+              </span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-extrabold text-white leading-[1.1] tracking-tight italic">
               "{data.hook}"
             </h3>
           </div>
         </div>
         
-        <div className="p-6">
-          <h4 className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-3">Script Body</h4>
-          <p className="text-zinc-200 leading-relaxed">
-            {data.body}
-          </p>
-          <div className="mt-6 pt-6 border-t border-zinc-800">
-            <button 
-              onClick={() => navigator.clipboard.writeText(`${data.hook}\n\n${data.body}`)}
-              className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl transition-colors"
-            >
-              Copy Script
-            </button>
+        {/* CONTENT SECTION */}
+        <div className="p-8 bg-zinc-900">
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-2">Narrative Script</h4>
+              <p className="text-zinc-200 text-lg leading-relaxed font-medium">
+                {data.body}
+              </p>
+            </div>
+            
+            <div className="pt-6">
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(`${data.hook}\n\n${data.body}`);
+                  alert("Copied to clipboard!");
+                }}
+                className="w-full py-4 bg-zinc-100 hover:bg-white text-black font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg"
+              >
+                Copy Viral Script
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
