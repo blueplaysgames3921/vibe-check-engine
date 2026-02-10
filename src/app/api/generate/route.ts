@@ -1,46 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TEXT_MODEL } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
   try {
     const { topic } = await req.json();
     const apiKey = process.env.POLLINATIONS_API_KEY;
 
-    // Use a simpler prompt structure
-    const prompt = `Topic: ${topic}. Return ONLY a JSON object with keys "hook", "body", and "imagePrompt". Do not include markdown code blocks.`;
-
+    // Direct endpoint with the model in the payload
     const response = await fetch("https://text.pollinations.ai/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(apiKey ? { "Authorization": `Bearer ${apiKey}` } : {})
       },
       body: JSON.stringify({
         messages: [
-          { role: "system", content: "You are a viral content creator. Output JSON only." },
-          { role: "user", content: prompt }
+          { 
+            role: "system", 
+            content: "You are a viral strategist. Output ONLY a raw JSON object with keys: hook, body, imagePrompt. No markdown." 
+          },
+          { role: "user", content: `Topic: ${topic}` }
         ],
-        model: TEXT_MODEL,
-        seed: Math.floor(Math.random() * 1000)
+        model: "nova-fast", // Hardcoded for stability
+        jsonMode: true
       }),
     });
 
     if (!response.ok) {
-      const errDetail = await response.text();
-      console.error("DEBUG:", errDetail);
-      return NextResponse.json({ error: `API Refused: ${response.status}` }, { status: response.status });
+      return NextResponse.json({ error: `API Error: ${response.status}` }, { status: response.status });
     }
 
     const data = await response.json();
-    let content = data.choices[0].message.content;
+    
+    // Pollinations returns the text directly or in an OpenAI choice object
+    let content = data.choices ? data.choices[0].message.content : data;
 
-    // Clean potential markdown wrap if the AI includes it
-    if (content.includes("```")) {
-      content = content.replace(/```json|```/g, "").trim();
+    if (typeof content === "string") {
+      content = JSON.parse(content.replace(/```json|```/g, "").trim());
     }
 
-    return NextResponse.json(JSON.parse(content));
+    return NextResponse.json(content);
   } catch (error: any) {
-    return NextResponse.json({ error: "Parsing or Network Error" }, { status: 500 });
+    console.error("Build error:", error.message);
+    return NextResponse.json({ error: "Check console logs" }, { status: 500 });
   }
 }
