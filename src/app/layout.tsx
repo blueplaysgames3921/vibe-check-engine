@@ -29,10 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${archivo.variable} ${instrument.variable} ${inter.variable} dark antialiased`}>
       <body className="bg-black text-white min-h-screen selection:bg-white selection:text-black overflow-x-hidden">
-        {/* The "Resonance" Noise Layer */}
+        
         <div className="fixed inset-0 z-[9999] pointer-events-none opacity-[0.03] contrast-150 brightness-100 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         
-        {/* Subtle Background Depth */}
+        
         <div className="fixed inset-0 z-0 bg-black">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-purple-600/5 blur-[120px] rounded-full"></div>
         </div>
