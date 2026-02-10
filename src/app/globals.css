@@ -1,3 +1,4 @@
+/* src/app/globals.css - Add these for the extra polish */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,10 +12,27 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: black;
+  letter-spacing: -0.02em;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Custom smooth scroll and scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+.tracking-tightest {
+  letter-spacing: -0.07em;
 }
