@@ -3,31 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  .font-brutal { font-family: var(--font-archivo); }
+  .font-serif { font-family: var(--font-instrument); }
+
   body {
     @apply bg-black text-white antialiased;
+    letter-spacing: -0.04em;
   }
 
-  .font-brutal {
-    font-family: var(--font-archivo);
-  }
-
-  .font-serif {
-    font-family: var(--font-instrument);
-  }
-
-  h1, h2, h3 {
-    @apply font-brutal uppercase tracking-tighter leading-[0.8];
-  }
-
-  p {
-    @apply font-serif;
-  }
+  h1, h2, h3 { @apply font-brutal uppercase; }
+  p { @apply font-serif; }
 }
 
+/* Custom layout utilities */
+.tracking-tightest { letter-spacing: -0.08em; }
+
+/* The "Luxury" Border */
+.border-white\/05 {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Hide scrollbar but keep functionality */
 ::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-full;
+  display: none;
 }
