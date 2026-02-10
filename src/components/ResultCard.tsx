@@ -20,16 +20,18 @@ export default function ResultCard({ data }: ResultCardProps) {
 
   return (
     <div className="w-full max-w-xl mx-auto p-4 mt-8">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col relative">
-        
-        {/* The Image Wrapper - MUST be relative and have a height/aspect */}
-        <div className="relative w-full aspect-[4/5] bg-zinc-950 overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+
+        <div 
+          className="relative w-full overflow-hidden bg-zinc-950" 
+          style={{ height: '500px' }}
+        >
           <Image
             src={imageUrl}
             alt="Cinematic Visual"
             fill
             sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover transition-transform duration-1000"
+            className="object-cover"
             unoptimized
             priority
           />
