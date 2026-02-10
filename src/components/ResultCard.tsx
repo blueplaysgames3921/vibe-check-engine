@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { IMAGE_BASE_URL, IMAGE_MODEL } from '@/lib/constants';
+import { IMAGE_MODEL } from '@/lib/constants';
 
 interface ResultCardProps {
   data: {
@@ -23,7 +23,7 @@ const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data
     <div className="w-full max-w-2xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
         <div className="relative aspect-[4/5] w-full bg-zinc-800">
-          <img
+          <Image
             src={imageUrl}
             alt="Generated content visual"
             fill
