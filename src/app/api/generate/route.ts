@@ -3,43 +3,33 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { topic } = await req.json();
-    const apiKey = process.env.POLLINATIONS_API_KEY;
+    
+    // We encode the prompt directly into the URL to avoid the 404 body-parsing issues
+    const systemInstruction = "You are a Gen-Z viral architect. Create a high-energy hook, a 3-sentence punchy script, and a cinematic image prompt. Return ONLY JSON.";
+    const fullPrompt = encodeURIComponent(`${systemInstruction} Topic: ${topic}`);
+    
+    // Using the direct text path which is less likely to 404
+    const url = `https://text.pollinations.ai/${fullPrompt}?model=nova-fast&json=true&seed=${Math.floor(Math.random() * 1000)}`;
 
-    // Direct endpoint with the model in the payload
-    const response = await fetch("https://text.pollinations.ai/", {
-      method: "POST",
+    const response = await fetch(url, {
+      method: "GET", // Changing to GET as it's more stable for the text-path endpoint
       headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messages: [
-          { 
-            role: "system", 
-            content: "You are a viral strategist. Output ONLY a raw JSON object with keys: hook, body, imagePrompt. No markdown." 
-          },
-          { role: "user", content: `Topic: ${topic}` }
-        ],
-        model: "nova-fast", // Hardcoded for stability
-        jsonMode: true
-      }),
+        "Referer": "https://vibe-check-engine.vercel.app",
+      }
     });
 
     if (!response.ok) {
       return NextResponse.json({ error: `API Error: ${response.status}` }, { status: response.status });
     }
 
-    const data = await response.json();
+    const text = await response.text();
     
-    // Pollinations returns the text directly or in an OpenAI choice object
-    let content = data.choices ? data.choices[0].message.content : data;
+    // Clean up the response in case the AI added markdown backticks
+    const cleanedText = text.replace(/```json|```/g, "").trim();
+    const jsonResponse = JSON.parse(cleanedText);
 
-    if (typeof content === "string") {
-      content = JSON.parse(content.replace(/```json|```/g, "").trim());
-    }
-
-    return NextResponse.json(content);
+    return NextResponse.json(jsonResponse);
   } catch (error: any) {
-    console.error("Build error:", error.message);
-    return NextResponse.json({ error: "Check console logs" }, { status: 500 });
+    return NextResponse.json({ error: "Build error or invalid JSON" }, { status: 500 });
   }
 }
