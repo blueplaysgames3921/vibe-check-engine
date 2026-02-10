@@ -3,49 +3,29 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+  body {
+    @apply bg-black text-white antialiased;
   }
 
-  body {
-    @apply bg-black text-white;
+  .font-brutal {
+    font-family: var(--font-archivo);
+  }
+
+  .font-serif {
+    font-family: var(--font-instrument);
   }
 
   h1, h2, h3 {
-    font-family: var(--font-archivo);
-    @apply uppercase tracking-tighter leading-[0.8] mb-4;
+    @apply font-brutal uppercase tracking-tighter leading-[0.8];
   }
 
   p {
-    font-family: var(--font-instrument);
-    @apply text-zinc-400 italic leading-relaxed;
-  }
-
-  span, button, input {
-    font-family: var(--font-inter);
+    @apply font-serif;
   }
 }
 
-@layer components {
-  .tracking-tightest {
-    letter-spacing: -0.06em;
-  }
-
-  /* High-contrast button style */
-  .btn-primary {
-    @apply relative overflow-hidden bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] 
-           py-6 px-12 transition-all duration-300 hover:invert active:scale-95;
-  }
-}
-
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
