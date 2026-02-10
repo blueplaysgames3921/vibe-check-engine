@@ -36,7 +36,6 @@ export default function Home() {
     <main className="min-h-screen bg-black">
       <Header />
       
-      {/* Hero Section */}
       <div className="relative pt-32 pb-20 px-4 flex flex-col items-center">
         <div className="mb-12 flex flex-col items-center">
            <h1 className="text-[14vw] md:text-[10rem] font-black leading-[0.75] tracking-tighter text-white uppercase text-center">
@@ -59,8 +58,7 @@ export default function Home() {
       )}
 
       <ResultCard data={data} />
-      
-      {/* Technical Footer Decoration */}
+
       <div className="fixed bottom-8 left-8 hidden lg:block">
          <p className="text-[10px] text-zinc-600 font-mono tracking-widest uppercase rotate-90 origin-left">
            Status: Optimal // Node: Gemini-Flash
