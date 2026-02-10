@@ -14,16 +14,14 @@ export default function Home() {
     setLoading(true);
     setError("");
     setData(null);
-
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic }),
       });
-
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Generation failed");
+      if (!response.ok) throw new Error(result.error);
       setData(result);
     } catch (err: any) {
       setError(err.message);
@@ -36,34 +34,22 @@ export default function Home() {
     <main className="min-h-screen bg-black">
       <Header />
       
-      <div className="relative pt-32 pb-20 px-4 flex flex-col items-center">
-        <div className="mb-12 flex flex-col items-center">
-           <h1 className="text-[14vw] md:text-[10rem] font-black leading-[0.75] tracking-tighter text-white uppercase text-center">
-             Vibe<br/><span className="text-zinc-800">Engine</span>
-           </h1>
+      <div className="pt-40 pb-24 px-8 md:px-20 max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
+        <div>
+          <h1 className="text-[18vw] lg:text-[12rem] font-brutal leading-[0.7] tracking-tightest text-white uppercase italic">
+            Vibe<br/><span className="text-white/10">Engine</span>
+          </h1>
         </div>
-
-        <div className="w-full max-w-2xl relative">
-          <div className="absolute -inset-4 bg-purple-500/10 blur-3xl rounded-full opacity-50"></div>
+        
+        <div className="space-y-8">
+          <p className="text-3xl md:text-4xl max-w-lg text-zinc-500 font-serif lowercase">
+            High-retention architectural scripts. generated via gemini-flash logic.
+          </p>
           <InputForm onGenerate={generateContent} isLoading={loading} />
         </div>
       </div>
 
-      {error && (
-        <div className="max-w-xl mx-auto mb-12 px-4">
-          <div className="border border-red-500/20 bg-red-500/5 p-4 rounded-xl text-red-500 text-[10px] font-black uppercase tracking-widest text-center">
-            {error}
-          </div>
-        </div>
-      )}
-
       <ResultCard data={data} />
-
-      <div className="fixed bottom-8 left-8 hidden lg:block">
-         <p className="text-[10px] text-zinc-600 font-mono tracking-widest uppercase rotate-90 origin-left">
-           Status: Optimal // Node: Gemini-Flash
-         </p>
-      </div>
     </main>
   );
 }
