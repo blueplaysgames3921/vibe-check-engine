@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     const { topic } = await req.json();
 
     // High-energy Gen-Z system instructions
-    const system = "Viral TikTok strategist. Output ONLY JSON with keys 'hook', 'body', 'imagePrompt'. No chat.";
+    const system = "Expert content strategist. Output ONLY a JSON object with: 'hook' (shocking opening), 'body' (3 punchy sentences), 'imagePrompt' (a high-quality, cinematic, hyper-realistic description for an image generator). No conversational filler.";
     
     // Formatting the prompt for the URL path
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
