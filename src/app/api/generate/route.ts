@@ -4,30 +4,29 @@ export async function POST(req: NextRequest) {
   try {
     const { topic } = await req.json();
 
-    // High-energy Gen-Z system instructions
-    const system = `You are a High-Retention Content Architect. 
-Your goal is to transform a topic into a viral masterpiece.
+    const system = `You are a Psychological Content Strategist. 
+Instructions:
+1. "hook": Create a high-tension opening that forces the viewer to stop scrolling. No emojis.
+2. "body": Write 3 rhythmic, hard-hitting sentences that explain the topic with authority.
+3. "imagePrompt": Describe a cinematic, hyper-realistic scene. Keywords: [Subject], 8k, highly detailed, dramatic rim lighting, depth of field, 35mm lens, moody atmosphere, professional photography.
 
-STRICT JSON FORMAT:
+STRICT RULES:
+- Return ONLY raw JSON.
+- No markdown, no backticks, no conversational filler.
+- Zero cringe, zero slang, zero "AI-style" introductions.
+
+JSON Structure:
 {
-  "hook": "A high-tension opening sentence that creates a curiosity gap. No emojis.",
-  "body": "3 punchy, rhythmic sentences that deliver intense value or shock. Professional tone, no slang.",
-  "imagePrompt": "A hyper-detailed cinematic description. Include: [Subject], [8k resolution], [highly detailed textures], [dramatic lighting: rim light/volumetric fog], [shot on 35mm lens, f/1.8], [color grade: moody/cinematic]. Avoid generic AI look."
-}
+  "hook": "",
+  "body": "",
+  "imagePrompt": ""
+}`;
 
-RULES:
-1. No 'Gen-Z' slang or cringe 'vibe' words. 
-2. The imagePrompt must describe a visual scene, not abstract concepts.
-3. Output ONLY the raw JSON.`;
-
-    // Formatting the prompt for the URL path
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
-    
-    // Seed makes the result unique every time
     const seed = Math.floor(Math.random() * 999999);
     
-    // Correct URL Structure: /model/prompt?json=true&seed=123
-    const url = `https://text.pollinations.ai/nova-fast/${prompt}?json=true&seed=${seed}`;
+    // Using gemini-fast for better instruction following with JSON
+    const url = `https://text.pollinations.ai/gemini-fast/${prompt}?json=true&seed=${seed}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -42,12 +41,12 @@ RULES:
 
     const text = await response.text();
     
-    // Clean and Parse
+    // Safety check for common AI markdown garbage
     const cleaned = text.replace(/```json|```/g, "").trim();
     const result = JSON.parse(cleaned);
 
     return NextResponse.json(result);
   } catch (error: any) {
-    return NextResponse.json({ error: "Check model path or JSON" }, { status: 500 });
+    return NextResponse.json({ error: "API Parse Error" }, { status: 500 });
   }
 }
