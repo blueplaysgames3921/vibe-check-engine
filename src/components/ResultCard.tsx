@@ -7,45 +7,47 @@ export default function ResultCard({ data }: { data: any }) {
   if (!data) return null;
 
   const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=flux&width=1080&height=1350&nologo=true&seed=${seed}`;
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=flux&width=1080&height=1440&nologo=true&seed=${seed}`;
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 pb-24">
-      <div className="relative bg-[#0A0A0A] border border-white/10 rounded-[3rem] p-3 shadow-2xl">
-        <div className="relative w-full h-[500px] rounded-[2.2rem] overflow-hidden bg-zinc-950">
+    <div className="w-full max-w-4xl mx-auto px-4 pb-40">
+      <div className="flex flex-col md:flex-row bg-[#080808] border border-white/[0.05] overflow-hidden rounded-[4rem]">
+        
+        
+        <div className="relative w-full md:w-1/2 h-[600px] md:h-auto overflow-hidden">
           <Image
             src={imageUrl}
-            alt="AI Visual"
+            alt="Cinematic Visual"
             fill
-            sizes="(max-width: 768px) 100vw, 800px"
-            className="object-cover"
+            className="object-cover transition-transform duration-[10s] hover:scale-110"
             unoptimized
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-0 p-12 w-full">
-             <div className="flex items-center gap-3 mb-4">
-                <div className="h-[1px] w-8 bg-purple-500"></div>
-                <span className="text-purple-500 text-[10px] font-bold uppercase tracking-[0.4em]">Viral Concept</span>
-             </div>
-             <h3 className="text-4xl font-brutal text-white leading-[0.9] italic">
-               {data.hook}
-             </h3>
-          </div>
         </div>
-        <div className="p-12">
-          <div className="space-y-10">
-            <div className="relative">
-              <span className="absolute -left-4 top-0 h-full w-[1px] bg-white/10"></span>
-              <p className="text-zinc-400 text-2xl font-serif italic">
+
+        <div className="w-full md:w-1/2 p-12 md:p-20 flex flex-col justify-between">
+          <div className="space-y-12">
+            <div className="space-y-4">
+              <span className="text-white/20 text-[10px] font-brutal uppercase tracking-[0.5em] block">Phase 01 // Hook</span>
+              <h3 className="text-4xl md:text-6xl font-brutal text-white leading-[0.85] italic lowercase">
+                {data.hook}
+              </h3>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-white/20 text-[10px] font-brutal uppercase tracking-[0.5em] block">Phase 02 // Narrative</span>
+              <p className="text-zinc-400 text-2xl md:text-3xl font-serif leading-tight">
                 {data.body}
               </p>
             </div>
+          </div>
+
+          <div className="mt-16">
             <button 
               onClick={() => navigator.clipboard.writeText(`${data.hook}\n\n${data.body}`)}
-              className="w-full py-6 bg-white text-black text-[10px] font-brutal uppercase tracking-[0.4em] rounded-2xl transition-all hover:bg-zinc-200 active:scale-95"
+              className="w-full group relative overflow-hidden py-8 bg-white text-black text-[11px] font-brutal uppercase tracking-[0.4em] transition-all hover:bg-zinc-200"
             >
-              Copy Script
+              <span className="relative z-10">Export Script</span>
             </button>
           </div>
         </div>
