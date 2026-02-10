@@ -5,8 +5,21 @@ export async function POST(req: NextRequest) {
     const { topic } = await req.json();
 
     // High-energy Gen-Z system instructions
-    const system = "Expert content strategist. Output ONLY a JSON object with: 'hook' (shocking opening), 'body' (3 punchy sentences), 'imagePrompt' (a high-quality, cinematic, hyper-realistic description for an image generator). No conversational filler.";
-    
+    const system = `You are a High-Retention Content Architect. 
+Your goal is to transform a topic into a viral masterpiece.
+
+STRICT JSON FORMAT:
+{
+  "hook": "A high-tension opening sentence that creates a curiosity gap. No emojis.",
+  "body": "3 punchy, rhythmic sentences that deliver intense value or shock. Professional tone, no slang.",
+  "imagePrompt": "A hyper-detailed cinematic description. Include: [Subject], [8k resolution], [highly detailed textures], [dramatic lighting: rim light/volumetric fog], [shot on 35mm lens, f/1.8], [color grade: moody/cinematic]. Avoid generic AI look."
+}
+
+RULES:
+1. No 'Gen-Z' slang or cringe 'vibe' words. 
+2. The imagePrompt must describe a visual scene, not abstract concepts.
+3. Output ONLY the raw JSON.`;
+
     // Formatting the prompt for the URL path
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
     
