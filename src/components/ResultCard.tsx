@@ -15,7 +15,6 @@ interface ResultCardProps {
 export default function ResultCard({ data }: ResultCardProps) {
   if (!data) return null;
 
-  // Generate a seed locally to ensure text and image are requested with the same context
   const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
   
   const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1350&nologo=true&seed=${seed}`;
@@ -24,19 +23,17 @@ export default function ResultCard({ data }: ResultCardProps) {
     <div className="w-full max-w-xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
         
-        {*/IMAGE CONTAINER/*}
         <div className="relative aspect-[4/5] w-full bg-zinc-950 overflow-hidden">
           <Image
             src={imageUrl}
             alt="Cinematic Visual"
             fill
             sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover transition-scale duration-1000 hover:scale-105"
+            className="object-cover transition-transform duration-1000 hover:scale-105"
             unoptimized
             priority
           />
           
-          {/* Text Overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
           <div className="absolute bottom-0 p-8 w-full">
             <div className="flex items-center gap-2 mb-3">
@@ -50,7 +47,6 @@ export default function ResultCard({ data }: ResultCardProps) {
           </div>
         </div>
         
-        {/* CONTENT SECTION */}
         <div className="p-8 bg-zinc-900">
           <div className="space-y-4">
             <div>
