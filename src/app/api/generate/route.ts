@@ -3,16 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { topic } = await req.json();
+
+    // High-energy Gen-Z system instructions
+    const system = "Viral TikTok strategist. Output ONLY JSON with keys 'hook', 'body', 'imagePrompt'. No chat.";
     
-    // We encode the prompt directly into the URL to avoid the 404 body-parsing issues
-    const systemInstruction = "You are a Gen-Z viral architect. Create a high-energy hook, a 3-sentence punchy script, and a cinematic image prompt. Return ONLY JSON.";
-    const fullPrompt = encodeURIComponent(`${systemInstruction} Topic: ${topic}`);
+    // Formatting the prompt for the URL path
+    const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
     
-    // Using the direct text path which is less likely to 404
-    const url = `https://text.pollinations.ai/${fullPrompt}?model=nova-fast&json=true&seed=${Math.floor(Math.random() * 1000)}`;
+    // Seed makes the result unique every time
+    const seed = Math.floor(Math.random() * 999999);
+    
+    // Correct URL Structure: /model/prompt?json=true&seed=123
+    const url = `https://text.pollinations.ai/nova-fast/${prompt}?json=true&seed=${seed}`;
 
     const response = await fetch(url, {
-      method: "GET", // Changing to GET as it's more stable for the text-path endpoint
+      method: "GET",
       headers: {
         "Referer": "https://vibe-check-engine.vercel.app",
       }
@@ -24,12 +29,12 @@ export async function POST(req: NextRequest) {
 
     const text = await response.text();
     
-    // Clean up the response in case the AI added markdown backticks
-    const cleanedText = text.replace(/```json|```/g, "").trim();
-    const jsonResponse = JSON.parse(cleanedText);
+    // Clean and Parse
+    const cleaned = text.replace(/```json|```/g, "").trim();
+    const result = JSON.parse(cleaned);
 
-    return NextResponse.json(jsonResponse);
+    return NextResponse.json(result);
   } catch (error: any) {
-    return NextResponse.json({ error: "Build error or invalid JSON" }, { status: 500 });
+    return NextResponse.json({ error: "Check model path or JSON" }, { status: 500 });
   }
 }
