@@ -16,25 +16,26 @@ export default function ResultCard({ data }: ResultCardProps) {
   if (!data) return null;
 
   const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
-  
   const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1350&nologo=true&seed=${seed}`;
 
   return (
-    <div className="w-full max-w-xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col">
+    <div className="w-full max-w-xl mx-auto p-4 mt-8">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col relative">
         
-        <div className="relative aspect-[4/5] w-full bg-zinc-950 overflow-hidden">
+        {/* The Image Wrapper - MUST be relative and have a height/aspect */}
+        <div className="relative w-full aspect-[4/5] bg-zinc-950 overflow-hidden">
           <Image
             src={imageUrl}
             alt="Cinematic Visual"
             fill
             sizes="(max-width: 768px) 100vw, 600px"
-            className="object-cover transition-transform duration-1000 hover:scale-105"
+            className="object-cover transition-transform duration-1000"
             unoptimized
             priority
           />
           
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+          
           <div className="absolute bottom-0 p-8 w-full">
             <div className="flex items-center gap-2 mb-3">
               <span className="bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-sm">
@@ -60,9 +61,9 @@ export default function ResultCard({ data }: ResultCardProps) {
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(`${data.hook}\n\n${data.body}`);
-                  alert("Copied to clipboard!");
+                  alert("Copied!");
                 }}
-                className="w-full py-4 bg-zinc-100 hover:bg-white text-black font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg"
+                className="w-full py-4 bg-zinc-100 hover:bg-white text-black font-bold rounded-2xl transition-all active:scale-[0.98]"
               >
                 Copy Viral Script
               </button>
