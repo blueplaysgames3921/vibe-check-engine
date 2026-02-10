@@ -15,13 +15,15 @@ interface ResultCardProps {
 export default function ResultCard({ data }: ResultCardProps) {
   if (!data) return null;
 
-  const imageUrl = `${IMAGE_BASE_URL}/image/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1920&nologo=true`;
+const seed = Math.floor(Math.random() * 999999);
+const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt)}?model=${IMAGE_MODEL}&width=1080&height=1920&nologo=true&seed=${seed}`;
+
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl">
         <div className="relative aspect-[4/5] w-full bg-zinc-800">
-          <Image
+          <img
             src={imageUrl}
             alt="Generated content visual"
             fill
