@@ -25,7 +25,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${instrument.variable} dark`}>
-      <body className="bg-black text-white antialiased">
+      <body className="bg-black text-white antialiased overflow-x-hidden">
+        {/* Simplified background stack to prevent layout shifting crashes */}
         <div className="fixed inset-0 z-0 bg-black" />
         <div className="relative z-10">{children}</div>
       </body>
