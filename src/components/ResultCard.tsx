@@ -4,7 +4,6 @@ import Image from 'next/image';
 
 export default function ResultCard({ data }: { data: any }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  
   if (!data) return null;
 
   const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
@@ -12,13 +11,21 @@ export default function ResultCard({ data }: { data: any }) {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+      
+      {/* API Warning Badge */}
+      {data.isFallback && (
+        <div className="flex items-center gap-3 mb-8 ml-4 font-mono text-[10px] tracking-[0.4em] text-amber-500/60 uppercase italic">
+          <span className="w-2 h-2 bg-amber-500 rounded-full animate-ping" />
+          Uplink Failure: Displaying Emergency Cache
+        </div>
+      )}
+
       <div className="premium-card rounded-[3rem] overflow-hidden flex flex-col lg:grid lg:grid-cols-12 min-h-[750px]">
-        
         {/* IMAGE SIDE */}
         <div className="lg:col-span-5 relative h-[500px] lg:h-auto overflow-hidden bg-zinc-900 border-b lg:border-b-0 lg:border-r border-white/5">
           {!isLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[10px] font-mono tracking-[0.4em] text-white/20 animate-pulse">Rendering_Visual...</span>
+            <div className="absolute inset-0 flex items-center justify-center bg-zinc-950">
+              <span className="text-[10px] font-mono tracking-[0.4em] text-white/20 animate-pulse uppercase">Visual_Synthesis...</span>
             </div>
           )}
           <Image
