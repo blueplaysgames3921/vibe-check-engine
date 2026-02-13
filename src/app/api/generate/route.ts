@@ -15,9 +15,9 @@ RULES: No slang. No cringe. No markdown backticks.`;
 
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
     
-    // 1. Timeout protection: kill the request if it takes too long
+    // Timeout to prevent Vercel from hanging and throwing a generic 504
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 9000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const url = `https://text.pollinations.ai/gemini-fast/${prompt}?json=true&seed=${Math.floor(Math.random() * 999999)}`;
 
@@ -30,28 +30,27 @@ RULES: No slang. No cringe. No markdown backticks.`;
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      return NextResponse.json({ error: "Upstream_API_Failure" }, { status: 502 });
+      return NextResponse.json({ error: "UPSTREAM_SERVICE_DOWN" }, { status: 502 });
     }
 
     const text = await response.text();
     
-    // 2. SAFE PARSE: This prevents the Vercel 500 crash
+    // SAFE PARSING: We catch the error here so the server function doesn't crash
     try {
       const cleaned = text.replace(/```json|```/g, "").trim();
       const result = JSON.parse(cleaned);
 
-      if (!result.hook || !result.body) throw new Error("Incomplete_JSON");
+      if (!result.hook || !result.body) throw new Error("INCOMPLETE_DATA");
 
       return NextResponse.json(result);
     } catch (parseError) {
-      console.error("JSON_PARSE_FAILED. Raw output was:", text);
-      // Return 422 so frontend knows it's not valid JSON
-      return NextResponse.json({ error: "Invalid_Format" }, { status: 422 });
+      console.error("PARSING_ERROR:", text);
+      return NextResponse.json({ error: "MALFORMED_AI_RESPONSE" }, { status: 422 });
     }
 
   } catch (error: any) {
-    console.error("CRITICAL_API_FAULT:", error);
+    console.error("CRITICAL_FAULT:", error);
     const status = error.name === 'AbortError' ? 504 : 500;
-    return NextResponse.json({ error: "Internal_Server_Error" }, { status });
+    return NextResponse.json({ error: "SYSTEM_FAILURE" }, { status });
   }
 }
