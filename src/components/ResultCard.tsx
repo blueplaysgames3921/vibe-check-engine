@@ -1,106 +1,74 @@
 "use client";
-import { useState, useRef } from "react";
-import Header from "@/components/Header";
-import InputForm from "@/components/InputForm";
-import ResultCard from "@/components/ResultCard";
+import React, { useState } from 'react';
+import Image from 'next/image';
 
-interface VibeData {
-  hook: string;
-  body: string;
-  imagePrompt: string;
-  isFallback?: boolean;
-}
+export default function ResultCard({ data }: { data: any }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  if (!data) return null;
 
-export default function Home() {
-  const [data, setData] = useState<VibeData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("Operational_v1.0.4");
-  const resultRef = useRef<HTMLDivElement>(null);
-
-  const dummyData: VibeData = {
-    hook: "SIGNAL_LOST_RECOVERY",
-    body: "The central intelligence uplink is offline (Error 1033). Displaying localized system artifact for terminal validation.",
-    imagePrompt: "brutalist obsidian monolith, cinematic purple lightning, fog, hyper-realistic",
-    isFallback: true
-  };
-
-  async function generateContent(topic: string) {
-    setLoading(true);
-    setData(null); // Clear previous to prevent UI mismatch
-    setStatus("SYNTHESIZING_CORE...");
-    
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic }),
-      });
-
-      // 3. THE SHIELD: If status is not 200, stop immediately and use fallback
-      if (!res.ok) {
-        throw new Error(`API_REJECTED_WITH_STATUS_${res.status}`);
-      }
-
-      const result = await res.json();
-      
-      // 4. Validate object keys before setting state
-      if (!result.hook) throw new Error("MALFORMED_DATA");
-
-      setData(result);
-      setStatus("CORE_STABLE");
-      
-      setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-
-    } catch (e) {
-      console.error("Frontend Safety Net Triggered:", e);
-      // FORCE DUMMY DATA INSTEAD OF CRASHING
-      setData(dummyData);
-      setStatus("NODE_OFFLINE_FALLBACK_ACTIVE");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const seed = React.useMemo(() => Math.floor(Math.random() * 999999), [data]);
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || "brutalist design") }?model=flux&width=1000&height=1250&nologo=true&seed=${seed}`;
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative overflow-hidden bg-black">
-      <div className="noise-overlay" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none animate-pulse" />
-
-      <Header />
+    <div className="w-full max-w-6xl mx-auto px-6 py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       
-      <div className="w-full max-w-7xl px-6 pt-48 pb-20 relative z-10 text-center">
-        <div className="mb-20 select-none">
-          <h1 className="text-[14vw] md:text-[180px] font-[family-name:var(--font-archivo)] leading-[0.75] tracking-tighter uppercase italic">
-            <span className="text-chrome block text-white">VIBE</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-600 opacity-90 drop-shadow-[0_0_40px_rgba(139,92,246,0.4)]">
-              ENGINE
+      {/* API Warning Badge */}
+      {data.isFallback && (
+        <div className="flex items-center gap-3 mb-8 ml-4 font-mono text-[10px] tracking-[0.4em] text-amber-500/60 uppercase italic">
+          <span className="w-2 h-2 bg-amber-500 rounded-full animate-ping" />
+          Uplink Failure: Displaying Emergency Cache
+        </div>
+      )}
+
+      <div className="premium-card rounded-[3rem] overflow-hidden flex flex-col lg:grid lg:grid-cols-12 min-h-[750px]">
+        {/* IMAGE SIDE */}
+        <div className="lg:col-span-5 relative h-[500px] lg:h-auto overflow-hidden bg-zinc-900 border-b lg:border-b-0 lg:border-r border-white/5">
+          {!isLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-zinc-950">
+              <span className="text-[10px] font-mono tracking-[0.4em] text-white/20 animate-pulse uppercase">Visual_Synthesis...</span>
+            </div>
+          )}
+          <Image
+            src={imageUrl}
+            alt="Artifact"
+            fill
+            className={`object-cover transition-all duration-[10s] hover:scale-110 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            unoptimized
+            onLoadingComplete={() => setIsLoaded(true)}
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-purple-900/5 to-transparent pointer-events-none" />
+        </div>
+
+        {/* CONTENT SIDE */}
+        <div className="lg:col-span-7 p-12 lg:p-24 flex flex-col justify-between bg-zinc-950/20">
+          <div className="space-y-16">
+            <div className="space-y-4">
+              <span className="text-purple-500/50 text-[10px] font-mono tracking-[0.6em] mb-4 block uppercase italic">Log_01 // Output</span>
+              <h3 className="text-5xl lg:text-8xl font-[family-name:var(--font-archivo)] leading-[0.85] italic text-white drop-shadow-2xl">
+                {data.hook}
+              </h3>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-blue-500/50 text-[10px] font-mono tracking-[0.6em] mb-4 block uppercase italic">Log_02 // Narrative</span>
+              <p className="text-2xl lg:text-4xl font-[family-name:var(--font-instrument)] text-zinc-300 leading-tight italic">
+                {data.body}
+              </p>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => navigator.clipboard.writeText(`${data.hook}\n\n${data.body}`)}
+            className="group relative w-full h-24 mt-16 bg-white rounded-2xl overflow-hidden transition-all active:scale-[0.98] shadow-[0_0_50px_rgba(255,255,255,0.1)]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+            <span className="relative z-10 text-black font-[family-name:var(--font-archivo)] text-[11px] uppercase tracking-[0.5em] group-hover:text-white transition-colors duration-300">
+              Extract Artifact
             </span>
-          </h1>
-          <p className="mt-8 text-zinc-500 font-[family-name:var(--font-instrument)] text-xl md:text-2xl italic tracking-[0.3em] opacity-40 uppercase">
-            {loading ? "Reconfiguring_Vibe..." : "High_Fidelity_Content_Terminal"}
-          </p>
-        </div>
-
-        <div className="max-w-2xl mx-auto relative group">
-          <InputForm onGenerate={generateContent} isLoading={loading} />
+          </button>
         </div>
       </div>
-
-      <div ref={resultRef} className="w-full relative z-10 pb-40 min-h-[50vh]">
-        <ResultCard data={data} />
-      </div>
-
-      <footer className="fixed bottom-0 w-full bg-black/80 backdrop-blur-lg border-t border-white/5 py-4 px-8 flex justify-between items-center z-50">
-        <div className="flex items-center gap-3">
-          <div className={`w-2 h-2 rounded-full ${status.includes("OFFLINE") ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse"}`} />
-          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-            {status}
-          </span>
-        </div>
-        <div className="text-[9px] font-mono tracking-[1em] text-zinc-700 uppercase hidden md:block">
-          Infrastructure_P_V1
-        </div>
-      </footer>
-    </main>
+    </div>
   );
 }
