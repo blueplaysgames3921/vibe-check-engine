@@ -7,8 +7,8 @@
     background-color: #000;
     /* Atmospheric depth: Subtle purple and blue glows in the corners */
     background-image: 
-      radial-gradient(circle at 20% -10%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 80% 110%, rgba(59, 130, 246, 0.12) 0%, transparent 40%);
+      radial-gradient(circle at 20% -10%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 80% 110%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
     background-attachment: fixed;
     color: #fff;
     margin: 0;
@@ -28,17 +28,17 @@
   .premium-card {
     @apply relative bg-zinc-950/40 border border-white/10 backdrop-blur-3xl;
     box-shadow: 
-      0 0 80px -20px rgba(139, 92, 246, 0.15),
+      0 0 80px -20px rgba(139, 92, 246, 0.1),
       inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
   }
 
-  /* Liquid Metal Text Effect */
+  /* Chrome/Metal Text Effect */
   .text-chrome {
     @apply bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30;
   }
 }
 
-/* Film Grain Texture */
+/* Film Grain Texture - Adds that "Engine" grit */
 .noise-overlay {
   position: fixed;
   inset: 0;
