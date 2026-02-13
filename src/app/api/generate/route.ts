@@ -15,7 +15,7 @@ RULES: No slang. No cringe. No markdown backticks.`;
 
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
     
-    // Timeout controller to prevent Vercel 504s
+    // 1. Timeout protection: kill the request if it takes too long
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 9000);
 
@@ -35,7 +35,7 @@ RULES: No slang. No cringe. No markdown backticks.`;
 
     const text = await response.text();
     
-    // THE SAFE PARSER: Prevents the "Client-side exception" crash
+    // 2. SAFE PARSE: This prevents the Vercel 500 crash
     try {
       const cleaned = text.replace(/```json|```/g, "").trim();
       const result = JSON.parse(cleaned);
@@ -44,8 +44,8 @@ RULES: No slang. No cringe. No markdown backticks.`;
 
       return NextResponse.json(result);
     } catch (parseError) {
-      console.error("JSON_PARSE_FAILED:", text);
-      // We return a 422 so the frontend knows the data was garbage
+      console.error("JSON_PARSE_FAILED. Raw output was:", text);
+      // Return 422 so frontend knows it's not valid JSON
       return NextResponse.json({ error: "Invalid_Format" }, { status: 422 });
     }
 
