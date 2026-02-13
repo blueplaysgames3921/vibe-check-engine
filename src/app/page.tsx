@@ -26,28 +26,35 @@ export default function Home() {
 
   async function generateContent(topic: string) {
     setLoading(true);
-    setData(null);
+    setData(null); 
     setStatus("SYNTHESIZING_CORE...");
     
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic }),
       });
 
-      // If Cloudflare returns an error page, res.ok will be false
-      if (!res.ok) throw new Error("UPSTREAM_OFFLINE");
+      // GATEKEEPER: If the response is not 200 OK, jump to catch block immediately.
+      // This prevents trying to parse an HTML error page as JSON.
+      if (!res.ok) {
+        throw new Error(`API_ERROR_CODE_${res.status}`);
+      }
 
       const result = await res.json();
+      
+      // Final structure check
+      if (!result || !result.hook) throw new Error("DATA_INTEGRITY_FAULT");
+
       setData(result);
       setStatus("CORE_STABLE");
       
-      // Smooth scroll to the result at the bottom
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
 
     } catch (e) {
-      console.error("System Error Handled:", e);
-      setData(dummyData);
+      console.error("FALLBACK_TRIGGERED:", e);
+      setData(dummyData); // Now this safely renders the card with the fallback info
       setStatus("NODE_OFFLINE_FALLBACK_ACTIVE");
     } finally {
       setLoading(false);
@@ -55,10 +62,8 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative overflow-hidden bg-black">
-      {/* Cool Grains preserved here */}
+    <main className="min-h-screen flex flex-col items-center relative overflow-hidden bg-black text-white">
       <div className="noise-overlay" />
-      
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none animate-pulse" />
 
       <Header />
@@ -81,12 +86,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Result Section (At the bottom) */}
       <div ref={resultRef} className="w-full relative z-10 pb-40 min-h-[50vh]">
         <ResultCard data={data} />
       </div>
 
-      {/* Professional System Footer */}
       <footer className="fixed bottom-0 w-full bg-black/80 backdrop-blur-lg border-t border-white/5 py-4 px-8 flex justify-between items-center z-50">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${status.includes("OFFLINE") ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse"}`} />
