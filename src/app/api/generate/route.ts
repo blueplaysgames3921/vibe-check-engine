@@ -1,4 +1,3 @@
-// src/app/api/generate/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,20 +14,45 @@ Structure:
 RULES: No slang. No cringe. No markdown backticks.`;
 
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
+    // We use a timeout signal to prevent the function from hanging and crashing Vercel
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const url = `https://text.pollinations.ai/gemini-fast/${prompt}?json=true&seed=${Math.floor(Math.random() * 999999)}`;
 
     const response = await fetch(url, {
       method: "GET",
-      headers: { "Referer": "https://vibe-check-engine.vercel.app" }
+      headers: { "Referer": "https://vibe-check-engine.vercel.app" },
+      signal: controller.signal
     });
 
-    if (!response.ok) return NextResponse.json({ error: "API Down" }, { status: 500 });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return NextResponse.json({ error: "Upstream_Fault" }, { status: 502 });
+    }
 
     const text = await response.text();
-    const result = JSON.parse(text.replace(/```json|```/g, "").trim());
+    
+    // SAFE PARSING LOGIC
+    try {
+      // Clean potential markdown and whitespace
+      const cleaned = text.replace(/```json|```/g, "").trim();
+      const result = JSON.parse(cleaned);
 
-    return NextResponse.json(result);
-  } catch (error) {
-    return NextResponse.json({ error: "Build Error" }, { status: 500 });
+      // Validate the object has the keys we need
+      if (!result.hook || !result.body) throw new Error("Incomplete_JSON");
+
+      return NextResponse.json(result);
+    } catch (parseError) {
+      console.error("JSON_PARSE_FAILED:", text);
+      return NextResponse.json({ error: "Invalid_Response_Format" }, { status: 422 });
+    }
+
+  } catch (error: any) {
+    console.error("CRITICAL_API_FAULT:", error);
+    // If it was a timeout/abort, return 504
+    const status = error.name === 'AbortError' ? 504 : 500;
+    return NextResponse.json({ error: "System_Fault" }, { status });
   }
 }
