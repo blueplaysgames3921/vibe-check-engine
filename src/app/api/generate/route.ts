@@ -14,9 +14,10 @@ Structure:
 RULES: No slang. No cringe. No markdown backticks.`;
 
     const prompt = encodeURIComponent(`${system} Topic: ${topic}`);
-    // We use a timeout signal to prevent the function from hanging and crashing Vercel
+    
+    // Timeout controller to prevent Vercel 504s
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 9000);
 
     const url = `https://text.pollinations.ai/gemini-fast/${prompt}?json=true&seed=${Math.floor(Math.random() * 999999)}`;
 
@@ -29,30 +30,28 @@ RULES: No slang. No cringe. No markdown backticks.`;
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      return NextResponse.json({ error: "Upstream_Fault" }, { status: 502 });
+      return NextResponse.json({ error: "Upstream_API_Failure" }, { status: 502 });
     }
 
     const text = await response.text();
     
-    // SAFE PARSING LOGIC
+    // THE SAFE PARSER: Prevents the "Client-side exception" crash
     try {
-      // Clean potential markdown and whitespace
       const cleaned = text.replace(/```json|```/g, "").trim();
       const result = JSON.parse(cleaned);
 
-      // Validate the object has the keys we need
       if (!result.hook || !result.body) throw new Error("Incomplete_JSON");
 
       return NextResponse.json(result);
     } catch (parseError) {
       console.error("JSON_PARSE_FAILED:", text);
-      return NextResponse.json({ error: "Invalid_Response_Format" }, { status: 422 });
+      // We return a 422 so the frontend knows the data was garbage
+      return NextResponse.json({ error: "Invalid_Format" }, { status: 422 });
     }
 
   } catch (error: any) {
     console.error("CRITICAL_API_FAULT:", error);
-    // If it was a timeout/abort, return 504
     const status = error.name === 'AbortError' ? 504 : 500;
-    return NextResponse.json({ error: "System_Fault" }, { status });
+    return NextResponse.json({ error: "Internal_Server_Error" }, { status });
   }
 }
