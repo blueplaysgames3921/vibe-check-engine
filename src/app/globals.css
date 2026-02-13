@@ -4,11 +4,12 @@
 
 @layer base {
   html, body {
-    background-color: #000000 !important;
+    background-color: #020202 !important; /* Slightly off-black for depth */
     color: #ffffff !important;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
@@ -17,11 +18,21 @@
   --font-instrument: 'Instrument Serif', serif;
 }
 
-.premium-bg {
-  background: radial-gradient(circle at 50% 0%, #111 0%, #000 100%);
+@layer components {
+  /* THE REFLECTION: A microscopic light-catch on the edge */
+  .premium-glass {
+    @apply relative bg-zinc-950/50 border border-white/[0.08] backdrop-blur-2xl;
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* THE DIMENSION: Forcing the layout to feel structural */
+  .aspect-premium {
+    aspect-ratio: 4 / 5;
+  }
 }
 
-.glass-border {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
 }
