@@ -1,12 +1,18 @@
-export const TEXT_MODEL = "nova-fast";
-export const IMAGE_MODEL = "flux";
-export const POLLINATIONS_BASE_URL = "https://text.pollinations.ai/";
-export const IMAGE_BASE_URL = "https://gen.pollinations.ai";
+// Bug fix: was entirely dead code and contradicted runtime values.
+// Now uses the correct unified gen.pollinations.ai domain and is imported by route.ts + ResultCard.tsx.
 
-export const SYSTEM_PROMPT = `You are a viral content strategist. 
-Given a topic, generate a JSON object containing:
-1. "hook": A thumb-stopping opening line.
-2. "body": A 3-sentence high-retention script.
-3. "imagePrompt": A highly detailed cinematic prompt for an image generator.
-Return ONLY valid JSON.`;
+export const TEXT_MODEL = "gemini-fast";
+export const IMAGE_MODEL = "flux";
+
+// Unified base domain for all Pollinations API calls (text + image)
+export const GEN_BASE_URL = "https://gen.pollinations.ai";
+
+export const SYSTEM_PROMPT = `You are a High-End Creative Director. Output ONLY raw JSON.
+Structure:
+{
+  "hook": "Aggressive high-stakes curiosity gap (max 10 words)",
+  "body": "3 cinematic sentences with elite vocabulary and heavy impact.",
+  "imagePrompt": "Cinematic photography, [Subject], hyper-detailed, 8k, moody lighting, shot on 35mm, high contrast, professional color grade, anamorphic lens flares."
+}
+RULES: No slang. No cringe. No markdown backticks.`;
 
