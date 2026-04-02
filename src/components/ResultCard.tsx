@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { VibeData } from '@/lib/types';
+import { GEN_BASE_URL, IMAGE_MODEL } from '@/lib/constants';
 
-export default function ResultCard({ data }: { data: any }) {
+export default function ResultCard({ data }: { data: VibeData | null }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [seed, setSeed] = useState<number | null>(null);
 
@@ -13,7 +15,10 @@ export default function ResultCard({ data }: { data: any }) {
 
   if (!data || !seed) return null;
 
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || "brutalist design") }?model=flux&width=1000&height=1250&nologo=true&seed=${seed}`;
+  // Bug fixes applied:
+  // 1. Correct domain + path: gen.pollinations.ai/image/{prompt} (not image.pollinations.ai/prompt/...)
+  // 2. Model pulled from constants instead of hardcoded string
+  const imageUrl = `${GEN_BASE_URL}/image/${encodeURIComponent(data.imagePrompt || "brutalist design")}?model=${IMAGE_MODEL}&width=1000&height=1250&nologo=true&seed=${seed}`;
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
@@ -34,7 +39,7 @@ export default function ResultCard({ data }: { data: any }) {
             fill
             className={`object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             unoptimized
-            onLoadingComplete={() => setIsLoaded(true)}
+            onLoad={() => setIsLoaded(true)}
           />
         </div>
 
