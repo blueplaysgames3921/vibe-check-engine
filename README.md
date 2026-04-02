@@ -1,71 +1,115 @@
-# ⚡ VIBE ENGINE // CORE_V1.0.0
+# Vibe Check Engine
 
-### HIGH_RETENTION_CONTENT_TERMINAL
-**VIBE ENGINE** is an advanced social media content synthesis terminal. It re-engineers mundane topics into high-impact viral scripts paired with cinematic AI-generated visuals. Built for creators who require elite narrative structure and high-fidelity aesthetic consistency.
-
----
-
-## 🛠️ TECH STACK & ARCHITECTURE
-
-The engine is built on a "Hardened Frontend" architecture to ensure operational stability and near-instant synthesis.
-
-* **Framework**: Next.js 14 (App Router)
-* **AI Backend**: Pollinations.ai API
-* **Text Model**: `gemini-fast` (Optimized for low-latency viral hooks)
-* **Image Model**: `flux` (Cinematic photography and brutalist renders)
-* **Deployment**: Vercel (Edge-optimized infrastructure)
+A content generation tool that takes a topic and returns a viral-ready hook, a short cinematic body, and an AI-generated image — all in one request. Built with Next.js 14 and the Pollinations API.
 
 ---
 
-## 🚀 CORE FEATURES
+## How it works
 
-### 1. Neural Synthesis & "Viral" Logic
-The engine utilizes custom system logic to transform raw data into a specific content hierarchy:
-* **Hook Phase**: High-stakes curiosity gaps (max 10 words).
-* **Body Phase**: 3-sentence cinematic narratives utilizing elite vocabulary.
-* **Visual Phase**: Automated prompt engineering for the `flux` model.
+You type a topic. The app sends it to a `/api/generate` route which hits the Pollinations text API using an OpenAI-compatible chat completions endpoint. The model (`gemini-fast`) returns a strict JSON object with three fields: a hook, a body, and an image prompt. That image prompt is then passed to Pollinations' Flux model to generate a matching visual.
 
-### 2. Operational Stability (The Hydration Shield)
-To prevent the "Application Error" common in high-performance Next.js apps, the engine implements:
-* **Mounted Gate Logic**: Ensures total synchronization between Client and Server render cycles.
-* **Seed Isolation**: Uses client-side `useEffect` seeding to prevent image hydration mismatches.
-* **Fault Tolerance**: Integrated `SIGNAL_LOST_RECOVERY` protocols to deploy localized artifacts during upstream API timeouts (Error 1033).
-
-### 3. Structured Output (JSON Mode)
-The system strictly enforces `jsonMode` for consistent API parsing, ensuring the frontend never attempts to render malformed AI text.
+The whole thing is structured so the UI never has to parse freeform AI text — the API enforces `json_object` mode and the route validates all three fields before returning anything to the client.
 
 ---
 
-## 📡 API SCHEMA
+## Stack
 
-The internal synthesis route (`/api/generate`) utilizes a strict JSON-only framework:
+- **Next.js 14** — App Router, server components, API routes
+- **Pollinations.ai** — free inference API for both text (`gemini-fast`) and images (`flux`)
+- **Tailwind CSS** — styling
+- **Vercel** — deployment
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `hook` | String | Aggressive, high-stakes curiosity gap |
-| `body` | String | 3-sentence cinematic narrative |
-| `imagePrompt` | String | Professional photography descriptors for Flux |
-| `isFallback` | Boolean | Flag for emergency cache status |
+No database. No auth. No paid API keys required.
 
 ---
 
-## 📜 LICENSE & USAGE
+## Getting started
 
-**© 2026 VIBE ENGINE. All Rights Reserved.**
+```bash
+git clone https://github.com/yourname/vibe-check-engine.git
+cd vibe-check-engine
+npm install
+npm run dev
+```
 
-This software and its associated source code are proprietary.
-* **Redistribution**: Strictly prohibited.
-* **Modification**: Unauthorized modification of the "Hydration Shield" or core branding is prohibited.
-* **Commercial Usage**: Requires explicit written authorization.
-
-Unauthorized duplication or reverse engineering of the system architecture is a violation of the developer's intellectual property rights.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## ⚠️ SYSTEM STATUS
+## Project structure
 
-`NODE_OFFLINE_FALLBACK_ACTIVE`: Operational
-`CORE_STABLE`: Operational
-`INFRASTRUCTURE`: Infrastructure_P_V1
+```
+src/
+  app/
+    api/generate/route.ts   # The generation endpoint
+    layout.tsx              # Root layout, metadata, fonts
+    page.tsx                # Main UI
+  components/
+    Header.tsx
+    InputForm.tsx
+    ResultCard.tsx
+  lib/
+    constants.ts            # Models, base URL, system prompt
+    types.ts
+public/
+  favicon.ico
+  manifest.json
+  robots.txt
+  sitemap.xml
+  og-image.png              # 1200x630 — used for social share previews
+```
 
-**[END_OF_MANUAL]**
+---
+
+## API route
+
+`POST /api/generate`
+
+**Request body**
+```json
+{ "topic": "the loneliness of overnight flights" }
+```
+
+**Response**
+```json
+{
+  "hook": "Nobody tells you about the 3am seat belt sign.",
+  "body": "...",
+  "imagePrompt": "Cinematic photography, empty airplane cabin at night..."
+}
+```
+
+**Error responses**
+
+| Status | Meaning |
+| --- | --- |
+| 422 | AI returned malformed or incomplete JSON |
+| 502 | Pollinations API is down or unreachable |
+| 504 | Request timed out (8s limit to avoid Vercel 504s) |
+
+The route uses an `AbortController` with an 8-second timeout. If Pollinations doesn't respond in time, the client gets a 504 instead of hanging until Vercel kills the function.
+
+---
+
+## Content structure
+
+Every generation follows the same three-part format defined in the system prompt:
+
+- **Hook** — 10 words max. A curiosity gap that makes someone stop scrolling.
+- **Body** — 3 sentences. Cinematic, high-impact, no filler.
+- **Image prompt** — Engineered for Flux: subject, lighting style, lens, color grade. The model doesn't freestyle this — it fills a template so the output is consistently usable.
+
+---
+
+## Deployment
+
+Deploy to Vercel with one click or via CLI:
+
+```bash
+npm install -g vercel
+vercel
+```
+
+No environment variables required. The app calls Pollinations directly from the server-side API route, which keeps your Referer header clean and avoids CORS issues on the client.
+
+---
