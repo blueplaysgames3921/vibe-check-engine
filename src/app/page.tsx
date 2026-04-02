@@ -3,13 +3,7 @@ import { useState, useRef } from "react";
 import Header from "@/components/Header";
 import InputForm from "@/components/InputForm";
 import ResultCard from "@/components/ResultCard";
-
-interface VibeData {
-  hook: string;
-  body: string;
-  imagePrompt: string;
-  isFallback?: boolean;
-}
+import { VibeData } from "@/lib/types";
 
 export default function Home() {
   const [data, setData] = useState<VibeData | null>(null);
@@ -44,8 +38,11 @@ export default function Home() {
 
       const result = await res.json();
       
-      // Final structure check
-      if (!result || !result.hook) throw new Error("DATA_INTEGRITY_FAULT");
+      // Bug fix: validate all three required fields, not just hook.
+      // If imagePrompt is missing, ResultCard renders with a broken image prompt.
+      if (!result || !result.hook || !result.body || !result.imagePrompt) {
+        throw new Error("DATA_INTEGRITY_FAULT");
+      }
 
       setData(result);
       setStatus("CORE_STABLE");
@@ -104,3 +101,4 @@ export default function Home() {
     </main>
   );
 }
+
