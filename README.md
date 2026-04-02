@@ -1,4 +1,4 @@
-# ⚡ VIBE ENGINE // CORE_V1.0.4
+# ⚡ VIBE ENGINE // CORE_V1.0.0
 
 ### HIGH_RETENTION_CONTENT_TERMINAL
 **VIBE ENGINE** is an advanced social media content synthesis terminal. It re-engineers mundane topics into high-impact viral scripts paired with cinematic AI-generated visuals. Built for creators who require elite narrative structure and high-fidelity aesthetic consistency.
