@@ -59,7 +59,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "IMAGE_UPSTREAM_FAILED" }, { status: 502 });
       }
 
-      const imageUrl = (await imageRes.text()).trim();
+      // fetch() follows redirects automatically and returns the final response.
+      // imageRes.url is the resolved URL after redirects — the actual image URL.
+      // imageRes.text() returns the image binary, not a URL string.
+      const imageUrl = imageRes.url;
 
       return NextResponse.json({ ...result, imageUrl });
     } catch (parseError) {
