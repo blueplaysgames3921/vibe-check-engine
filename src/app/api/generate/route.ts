@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Authorization: 'Bearer ${process.env.POLLINATIONS_KEY}'
       },
-      signal: controller.signal,
       body: JSON.stringify({
         model: TEXT_MODEL,
         messages: [
