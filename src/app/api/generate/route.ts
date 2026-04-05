@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Referer": "https://vibe-check-engine.vercel.app",
+        Authorization: 'Bearer ${process.env.POLLINATIONS_KEY}'
       },
       signal: controller.signal,
       body: JSON.stringify({
