@@ -8,7 +8,7 @@ import { VibeData } from "@/lib/types";
 export default function Home() {
   const [data, setData] = useState<VibeData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("Operational_v1.0.4");
+  const [status, setStatus] = useState("Operational_v1.0.0");
   const resultRef = useRef<HTMLDivElement>(null);
 
   const dummyData: VibeData = {
