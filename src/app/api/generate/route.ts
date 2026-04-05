@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: `Topic: ${topic}` },
         ],
-        response_format: { type: "json_object" },
         seed: Math.floor(Math.random() * 999999),
       }),
     });
