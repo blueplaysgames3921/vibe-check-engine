@@ -1,24 +1,20 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { VibeData } from '@/lib/types';
 import { GEN_BASE_URL, IMAGE_MODEL } from '@/lib/constants';
 
 export default function ResultCard({ data }: { data: VibeData | null }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [seed, setSeed] = useState<number | null>(null);
 
-  // Set seed only on mount/update to prevent server/client mismatch
-  useEffect(() => {
-    setSeed(Math.floor(Math.random() * 999999));
-  }, [data]);
+  if (!data) return null;
 
-  if (!data || !seed) return null;
-
-  // Bug fixes applied:
-  // 1. Correct domain + path: gen.pollinations.ai/image/{prompt} (not image.pollinations.ai/prompt/...)
-  // 2. Model pulled from constants instead of hardcoded string
-  const imageUrl = `${GEN_BASE_URL}/image/${encodeURIComponent(data.imagePrompt || "brutalist design")}?model=${IMAGE_MODEL}&width=1000&height=1250&nologo=true&seed=${seed}&key=${process.env.POLLINATIONS_KEY}`;
+  // Fix: process.env vars (without NEXT_PUBLIC_ prefix) are server-only and are
+  // undefined in "use client" components. The API route now builds the authenticated
+  // image URL on the server and returns it as `imageUrl` in the JSON response.
+  // Fall back to a keyless URL for the isFallback/demo case.
+  const imageUrl = data.imageUrl
+    ?? `${GEN_BASE_URL}/image/${encodeURIComponent(data.imagePrompt || "brutalist design")}?model=${IMAGE_MODEL}&width=1000&height=1250&nologo=true`;
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
