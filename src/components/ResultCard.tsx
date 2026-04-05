@@ -18,7 +18,7 @@ export default function ResultCard({ data }: { data: VibeData | null }) {
   // Bug fixes applied:
   // 1. Correct domain + path: gen.pollinations.ai/image/{prompt} (not image.pollinations.ai/prompt/...)
   // 2. Model pulled from constants instead of hardcoded string
-  const imageUrl = `${GEN_BASE_URL}/image/${encodeURIComponent(data.imagePrompt || "brutalist design")}?model=${IMAGE_MODEL}&width=1000&height=1250&nologo=true&seed=${seed}`;
+  const imageUrl = `${GEN_BASE_URL}/image/${encodeURIComponent(data.imagePrompt || "brutalist design")}?model=${IMAGE_MODEL}&width=1000&height=1250&nologo=true&seed=${seed}&key=${process.env.POLLINATIONS_KEY}`;
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
